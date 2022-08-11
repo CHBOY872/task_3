@@ -21,14 +21,13 @@ std::mutex m_comment_lines; // mutes for comment lines
 
 void function(std::ifstream *stream)
 {
-    std::string buf;                   // buffer where our line
-                                       // will be written
-    unsigned int th_all_lines = 0;     // local var for all lines
-    unsigned int th_blank_lines = 0;   // local var for blank lines
-    unsigned int th_code_lines = 0;    // local var for code lines
-    unsigned int th_comment_lines = 0; // loval var for comment lines
-    bool is_long_comment = false;      // bool flag if there is a long comment
-
+    std::string buf;                    // buffer where our line
+                                        // will be written
+    unsigned int th_all_lines = 0;      // local var for all lines
+    unsigned int th_blank_lines = 0;    // local var for blank lines
+    unsigned int th_code_lines = 0;     // local var for code lines
+    unsigned int th_comment_lines = 0;  // loval var for comment lines
+    bool is_long_comment = false;       // bool flag if there is a long comment
     for (; std::getline(*stream, buf);) // while is not an end of line
     {
         th_all_lines++;
@@ -78,6 +77,47 @@ void function(std::ifstream *stream)
     m_comment_lines.unlock();
 }
 
+void dir_handle(const char *path, ThreadList *list)
+{
+    if (strstr(path, "/../") || strstr(path, "/./"))
+        return;
+    DIR *dir = opendir(path);
+    if (!dir)
+        return;
+    struct dirent *directory;
+    while ((directory = readdir(dir)))
+    {
+        // std::cout << directory->d_name << std::endl;
+        if (strstr(directory->d_name, ".cpp") || // check if our files
+            strstr(directory->d_name, ".hpp") || // are .cpp .c .h .hpp
+            strstr(directory->d_name, ".c") ||
+            strstr(directory->d_name, ".h"))
+        {
+            std::string p(path);
+            p += std::string(directory->d_name);
+            std::ifstream *s = new std::
+                ifstream(p, std::ios::in);
+            if ((*s).is_open())          // if file was opened
+                list->Push(function, s); // put our threads to list
+            else
+            {
+                delete s;
+                std::cerr << strerror(errno) << std::endl; // print error
+                return;
+            }
+        }
+        else
+        {
+            std::string new_path(path);
+            new_path += directory->d_name;
+            new_path += '/';
+            dir_handle(new_path.c_str(), list);
+        }
+    }
+    free(directory);
+    closedir(dir);
+}
+
 int main(int argc, const char **argv)
 {
     struct timeval start; // value of time on start
@@ -98,38 +138,9 @@ int main(int argc, const char **argv)
         return 2;
     }
 
-    DIR *dir = opendir(argv[1]); // open directory which
-    if (!dir)                    // we should find files
-    {
-        perror("dir");
-        return 3;
-    }
-
     ThreadList list; // create list of threads
-    struct dirent *directory;
-    while ((directory = readdir(dir)))
-    {
-        if (strstr(directory->d_name, ".cpp") || // check if our files
-            strstr(directory->d_name, ".hpp") || // are .cpp .c .h .hpp
-            strstr(directory->d_name, ".c") ||
-            strstr(directory->d_name, ".h"))
-        {
-            std::string p(argv[1]);
-            p += std::string(directory->d_name);
-            std::ifstream *s = new std::
-                ifstream(p, std::ios::in);
-            if ((*s).is_open())         // if file was opened
-                list.Push(function, s); // put our threads to list
-            else
-            {
-                delete s;
-                std::cerr << strerror(errno) << std::endl; // print error
-                return 4;
-            }
-        }
-    }
-    closedir(dir);
-    free(directory);
+
+    dir_handle(argv[1], &list);
 
     ThreadList::Iterator *iter = list.Iterate(); // create the iterator
                                                  // of thread list
@@ -158,7 +169,7 @@ int main(int argc, const char **argv)
     f << "all lines: " << all_lines << std::endl;
     f << "blank lines: " << blank_lines << std::endl;
     f << "code lines " << code_lines << std::endl;
-    f << "commnt lines " << comment_lines << std::endl;
+    f << "comment lines " << comment_lines << std::endl;
     f.close();
     return 0;
 }

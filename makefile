@@ -11,7 +11,7 @@ OBJMODULES=$(SRCMODULES:.cpp=.o)
 HPPMODULES=$(SRCMODULES:.cpp=.hpp)
 
 %.o: %.cpp %.hpp
-	$(CPP) $(CPPFLAGS) -g $< -c -o $(LIBS) $@ $(ISOSTD)
+	$(CPP) $(CPPFLAGS) -g $< -c -o $@ $(LIBS) $(ISOSTD)
 
 main: main.cpp $(OBJMODULES)
-	$(CPP) $(CPPFLAGS) -s $^ -o $@ $(LIBS) $(ISOSTD)
+	$(CPP) $(CPPFLAGS) -g $^ -o $@ $(LIBS) $(ISOSTD)

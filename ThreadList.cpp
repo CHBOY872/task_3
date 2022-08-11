@@ -2,6 +2,7 @@
 #include <fstream>
 #include <filesystem>
 #include <thread>
+#include <mutex>
 #include <dirent.h>
 #include <string.h>
 #include "ThreadList.hpp"
