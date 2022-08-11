@@ -152,13 +152,13 @@ int main(int argc, const char **argv)
         return 5;
     }
 
-    f << "COUNT C/C++ FILES: " << list.GetCount() << std::endl;
-    f << "COUNTED FOR: " << time_res_s << "."
-      << time_res_us << " SEC" << std::endl;
-    f << "ALL LINES: " << all_lines << std::endl;
-    f << "BLANK LINES " << blank_lines << std::endl;
-    f << "CODE LINES " << code_lines << std::endl;
-    f << "COMMENT LINES " << comment_lines << std::endl;
+    f << "count C/C++ files: " << list.GetCount() << std::endl;
+    f << "time of excecution: " << time_res_s << "."
+      << time_res_us << "sec" << std::endl;
+    f << "all lines: " << all_lines << std::endl;
+    f << "blank lines: " << blank_lines << std::endl;
+    f << "code lines " << code_lines << std::endl;
+    f << "commnt lines " << comment_lines << std::endl;
     f.close();
     return 0;
 }
