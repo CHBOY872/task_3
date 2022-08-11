@@ -9,15 +9,15 @@
 #include <errno.h>        // for errno
 #include "ThreadList.hpp" // ThreadList ThreadListCursor ThreadList::Iterator
 
-static unsigned int all_lines = 0;     // all lines count
-static unsigned int blank_lines = 0;   // blank lines count
-static unsigned int code_lines = 0;    // code lines count
-static unsigned int comment_lines = 0; // comment lines count
+static unsigned int all_lines = 0;      // all lines count
+static unsigned int blank_lines = 0;    // blank lines count
+static unsigned int code_lines = 0;     // code lines count
+static unsigned int comment_lines = 0;  // comment lines count
 
-std::mutex m_all_lines;     // mutex for all lines
-std::mutex m_blank_lines;   // mutex for blank lines
-std::mutex m_code_lines;    // mutex for code lines
-std::mutex m_comment_lines; // mutes for comment lines
+std::mutex m_all_lines;                 // mutex for all lines
+std::mutex m_blank_lines;               // mutex for blank lines
+std::mutex m_code_lines;                // mutex for code lines
+std::mutex m_comment_lines;             // mutes for comment lines
 
 void function(std::ifstream *stream)
 {
@@ -31,7 +31,7 @@ void function(std::ifstream *stream)
     for (; std::getline(*stream, buf);) // while is not an end of line
     {
         th_all_lines++;
-        if ("" == buf) // if blank line
+        if ("" == buf)                  // if blank line
         {
             th_blank_lines++;
             continue;
@@ -87,9 +87,8 @@ void dir_handle(const char *path, ThreadList *list)
     struct dirent *directory;
     while ((directory = readdir(dir)))
     {
-        // std::cout << directory->d_name << std::endl;
-        if (strstr(directory->d_name, ".cpp") || // check if our files
-            strstr(directory->d_name, ".hpp") || // are .cpp .c .h .hpp
+        if (strstr(directory->d_name, ".cpp") ||        // check if our files
+            strstr(directory->d_name, ".hpp") ||        // are .cpp .c .h .hpp
             strstr(directory->d_name, ".c") ||
             strstr(directory->d_name, ".h"))
         {
@@ -97,8 +96,8 @@ void dir_handle(const char *path, ThreadList *list)
             p += std::string(directory->d_name);
             std::ifstream *s = new std::
                 ifstream(p, std::ios::in);
-            if ((*s).is_open())          // if file was opened
-                list->Push(function, s); // put our threads to list
+            if ((*s).is_open())                     // if file was opened
+                list->Push(function, s);            // put our threads to list
             else
             {
                 delete s;
@@ -120,10 +119,10 @@ void dir_handle(const char *path, ThreadList *list)
 
 int main(int argc, const char **argv)
 {
-    struct timeval start; // value of time on start
-    struct timeval end;   // value of time on end
+    struct timeval start;                           // value of time on start
+    struct timeval end;                             // value of time on end
 
-    gettimeofday(&start, 0); // get current time on start
+    gettimeofday(&start, 0);                        // get current time on start
 
     if (argc != 3)
     {
@@ -132,31 +131,31 @@ int main(int argc, const char **argv)
     }
 
     std::string path(argv[1]);
-    if (path.back() != '/') // check if argument was written
-    {                       // like a directory
+    if (path.back() != '/')                     // check if argument was written
+    {                                           // like a directory
         std::cout << "Path should end by " << '/' << std::endl;
         return 2;
     }
 
-    ThreadList list; // create list of threads
+    ThreadList list;                                // create list of threads
 
     dir_handle(argv[1], &list);
 
-    ThreadList::Iterator *iter = list.Iterate(); // create the iterator
-                                                 // of thread list
+    ThreadList::Iterator *iter = list.Iterate();    // create the iterator
+                                                    // of thread list
     while (iter->More())
-        (iter->Next())->join(); // run our threads
+        (iter->Next())->join();                     // run our threads
     delete iter;
 
-    gettimeofday(&end, 0); // get current day on end
+    gettimeofday(&end, 0);                          // get current day on end
 
     time_t time_res_s = end.tv_sec - start.tv_sec;
     useconds_t time_res_us = end.tv_usec - start.tv_usec;
 
     std::ofstream f(argv[2], std::ios::out | std::ios::trunc);
-    // open or create file
-    // in where results
-    // will be written
+                                                    // open or create file
+                                                    // in where results
+                                                    // will be written
     if (!f)
     {
         perror("file:");
