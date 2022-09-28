@@ -1,9 +1,7 @@
 #!/bin/sh
 
-if [[ -z $1 ]]
-then
-    make main
-else
-    make main DEFINES=MAXTHREADS=$1
-fi
-rm *.o
+cd src
+make all
+cd ..
+mv src/main .
+chmod +x main
