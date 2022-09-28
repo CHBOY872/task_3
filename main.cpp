@@ -131,7 +131,7 @@ int main(int argc, const char **argv)
         return 5;
     }
 
-    f << "count C/C++ files: " << threads.GetCount() << std::endl;
+    f << "count C/C++ files: " << file_list.GetCount() << std::endl;
     f << "time of excecution: " << time_res_s << "."
       << time_res_us << "sec" << std::endl;
     f << "all lines: " << all_lines << std::endl;

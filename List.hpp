@@ -14,14 +14,16 @@ class List
         item *next;
     };
     item *first;
+    int count;
 
 public:
-    List() : first(0) {}
+    List() : first(0), count(0) {}
     ~List();
 
     void Push(T *val);
     void Pop();
 
+    int GetCount() { return count; }
     T &Get();
 
     class Iterator
@@ -83,6 +85,7 @@ void List<T>::Push(T *val)
     tmp->val = new T(*val);
     tmp->next = first;
     first = tmp;
+    count++;
 }
 
 template <class T>
@@ -91,6 +94,7 @@ void List<T>::Pop()
     item *tmp = first;
     first = first->next;
     delete tmp;
+    count--;
 }
 
 template <class T>
