@@ -16,7 +16,7 @@ HPPMODULES=$(SRCMODULES:.cpp=.hpp)
 	$(CPP) $(CPPFLAGS) -g $< -c -o $@ $(ISOSTD)
 
 main: main.cpp $(OBJMODULES)
-	$(CPP) $(CPPFLAGS) -g -D$(DEFINES) $^ -o $@ $(ISOSTD)
+	$(CPP) $(CPPFLAGS) -g -D$(DEFINES) $^ $(LIBS) -o $@ $(ISOSTD)
 
 ifneq (clean, $(MAKECMDGOALS))
 -include deps.mk
