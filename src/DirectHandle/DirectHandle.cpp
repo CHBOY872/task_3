@@ -2,7 +2,6 @@
 
 #include <dirent.h> // for showind directories
 #include <string.h>
-#include "List.hpp" // for List
 
 void dir_handle(const char *path, List<std::string> *list)
 {

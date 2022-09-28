@@ -1,4 +1,6 @@
-ThreadList.o: ThreadList.cpp ThreadList.hpp List.hpp
-List.o: List.cpp List.hpp
-DirectHandle.o: DirectHandle.cpp DirectHandle.hpp List.hpp
-ThreadFuncs.o: ThreadFuncs.cpp ThreadFuncs.hpp
+DirectHandle.o: DirectHandle/DirectHandle.cpp \
+  DirectHandle/DirectHandle.hpp DirectHandle/../List/List.hpp
+ThreadList.o: ThreadList/ThreadList.cpp ThreadList/ThreadList.hpp \
+  ThreadList/../List/List.hpp
+ThreadFuncs.o: ThreadFuncs/ThreadFuncs.cpp ThreadFuncs/ThreadFuncs.hpp
+List.o: List/List.cpp List/List.hpp

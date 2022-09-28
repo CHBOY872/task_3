@@ -1,25 +1,24 @@
-#include <iostream>       // for std
-#include <thread>         // for threads
-#include <string.h>       // for strstr
-#include <sys/time.h>     // for timeval
-#include <mutex>          // for mutexes
-#include <string>         // for std::string
-#include <fstream>        // for std::ifstream, std::ofstream
-#include <errno.h>        // for errno
-#include "ThreadList.hpp" // ThreadList ThreadListCursor ThreadList::Iterator
-#include "List.hpp"       // for List
+#include <iostream>   // for std
+#include <thread>     // for threads
+#include <string.h>   // for strstr
+#include <sys/time.h> // for timeval
+#include <mutex>      // for mutexes
+#include <string>     // for std::string
+#include <fstream>    // for std::ifstream, std::ofstream
+#include <errno.h>    // for errno
 
-#include "ThreadFuncs.hpp"
-#include "DirectHandle.hpp"
+#include "List/List.hpp"             // for List
+#include "ThreadList/ThreadList.hpp" // ThreadList ThreadListCursor
+                                     // ThreadList::Iterator
+#include "ThreadFuncs/ThreadFuncs.hpp"
+#include "DirectHandle/DirectHandle.hpp"
 
 enum
 {
 #ifndef MAXTHREADS
-#define MAXTHREADS 4
-    max_threads = MAXTHREADS,
-#else
-    max_threads = MAXTHREADS
+#   define MAXTHREADS 4
 #endif
+    max_threads = MAXTHREADS,
 };
 
 static unsigned int all_lines = 0;     // all lines count
@@ -75,8 +74,12 @@ void count_function(List<std::string> *files_list)
 
 int main(int argc, const char **argv)
 {
-    struct timeval start; // value of time on start
-    struct timeval end;   // value of time on end
+    struct timeval start;        // value of time on start
+    struct timeval end;          // value of time on end
+    List<std::string> file_list; // main file list
+    List<std::string> lists_for_threads[max_threads];
+    List<std::thread> threads; // list of threads
+    int i;
 
     gettimeofday(&start, 0); // get current time on start
 
@@ -89,13 +92,9 @@ int main(int argc, const char **argv)
     std::string path(argv[1]);
     if (path.back() != '/') // check if argument was written
         path += '/';
-    List<std::string> file_list;
     dir_handle(path.c_str(), &file_list);
 
-    List<std::string> lists_for_threads[max_threads];
-
     List<std::string>::Iterator *it = file_list.Iterate();
-    int i;
     while (it->More())
     {
         for (i = 0; i < max_threads; i++)
@@ -107,23 +106,22 @@ int main(int argc, const char **argv)
     }
     delete it;
 
-    ThreadList threads;
     for (i = 0; i < max_threads; i++)
         threads.Push(count_function, &lists_for_threads[i]);
 
-    ThreadList::Iterator *thread_it = threads.Iterate();
+    List<std::thread>::Iterator *thread_it = threads.Iterate();
     while (thread_it->More())
-        thread_it->Next()->join();
+        thread_it->Next()->join(); // run our threads
     delete thread_it;
 
     gettimeofday(&end, 0); // get current day on end
 
-    time_t time_res_s = end.tv_sec - start.tv_sec;
-    useconds_t time_res_us = end.tv_usec - start.tv_usec;
+    time_t time_res_s = end.tv_sec - start.tv_sec;        // get the difference
+    useconds_t time_res_us = end.tv_usec - start.tv_usec; // of times
 
     std::ofstream f(argv[2], std::ios::out | std::ios::trunc);
     // open or create file
-    // in where results
+    // where results
     // will be written
     if (!f)
     {

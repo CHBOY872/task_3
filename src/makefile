@@ -8,7 +8,7 @@ LIBS=-lpthread
 
 DEFINES=MAXTHREADS=4
 
-SRCMODULES=ThreadList.cpp List.cpp DirectHandle.cpp ThreadFuncs.cpp
+SRCMODULES=$(shell find . -name '*.cpp' | grep -v 'main.cpp')
 OBJMODULES=$(SRCMODULES:.cpp=.o)
 HPPMODULES=$(SRCMODULES:.cpp=.hpp)
 
@@ -26,7 +26,7 @@ deps.mk: $(SRCMODULES)
 	$(CC) -MM $^ > $@
 
 clean:
-	rm *.o
+	find . -name '*.o' -delete
 
 all:
 	make main
