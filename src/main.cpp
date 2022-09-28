@@ -30,7 +30,7 @@ static unsigned int comment_lines = 0; // comment lines count
 static std::mutex m_all_lines;     // mutex for all lines
 static std::mutex m_blank_lines;   // mutex for blank lines
 static std::mutex m_code_lines;    // mutex for code lines
-static std::mutex m_comment_lines; // mutes for comment lines
+static std::mutex m_comment_lines; // mutex for comment lines
 
 void count_function(List<std::string> *files_list)
 {
